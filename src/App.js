@@ -1,25 +1,57 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import api from './api';
+import Header from './components/Header';
+import SearchBox from './components/Search';
+import Sorter from './components/Sorter';
+import PhoneBook from './components/PhoneBook';
 
 class App extends Component {
+  state = {
+    searchString: '',
+    sortDirection: -1,
+    contacts: null,
+  }
+
+  componentDidMount() {
+    this._asyncRequest = api.phonebook().then(
+      data => {
+        this._asyncRequest = null;
+        this.setState(data);
+      }
+    ); 
+  }
+
+  componentWillUnmount() {
+    if (this._asyncRequest) {
+      this._asyncRequest = null;
+    }
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Header />
+        <div className="main">
+          <div style={{display: 'flex', width: '450px'}}>
+            <SearchBox 
+              onTextChange={text => this.setState({searchString: text.toLowerCase()})}/>
+            <Sorter 
+              direction={this.state.sortDirection} 
+              onSort={() => this.setState({sortDirection: -1 * this.state.sortDirection})} />
+          </div>
+          {
+            this.state.contacts 
+            ? <PhoneBook contacts={this.state.contacts
+                .filter((contact)=>contact.name.toLowerCase().indexOf(this.state.searchString)>-1)
+                .sort((a,b)=>{
+                  if(a.name > b.name) return this.state.sortDirection * -1
+                  if(a.name < b.name) return this.state.sortDirection * 1
+                  return 0;
+                })} />
+            : <div>Loading...</div>
+          }
+        </div>
       </div>
     );
   }
