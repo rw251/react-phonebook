@@ -3,6 +3,7 @@ import './App.css';
 import api from './api';
 import Header from './components/Header';
 import SearchBox from './components/Search';
+import AddContact from './components/AddContact';
 import Sorter from './components/Sorter';
 import PhoneBook from './components/PhoneBook';
 
@@ -33,9 +34,10 @@ class App extends Component {
       <div className="App">
         <Header />
         <div className="main">
-          <div style={{display: 'flex', width: '450px'}}>
+          <div style={{display: 'flex'}}>
             <SearchBox 
               onTextChange={text => this.setState({searchString: text.toLowerCase()})}/>
+            <AddContact />
             <Sorter 
               direction={this.state.sortDirection} 
               onSort={() => this.setState({sortDirection: -1 * this.state.sortDirection})} />
